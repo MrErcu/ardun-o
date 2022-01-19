@@ -1,0 +1,86 @@
+#include<Servo.h>
+#include<LiquidCrystal.h>
+#include<Keypad.h>
+
+LiquidCrystal lcd(13,12,11,10,9,8);
+
+const byte satirlar=4;
+const byte sutunlar=3;
+
+char tuslar[satirlar][sutunlar]=
+{
+  {'1','2','3'},
+  {'4','5','6'},
+  {'7','8','9'},
+  {'*','0','#'}
+};
+
+byte satirpinleri[satirlar]={2,3,4,5};
+
+byte sutunpinleri[sutunlar]={A0,A1,A2};
+
+Keypad tustakimi=Keypad(makeKeymap(tuslar),satirpinleri,sutunpinleri,satirlar,sutunlar);
+
+
+Servo servo;
+
+String girilensifre="";
+String sifre="1903";
+
+void setup()
+{
+  lcd.begin(16,2);
+  lcd.print("HOSGELDINIZ");
+  delay(1000);
+  lcd.clear();
+  servo.attach(6);
+  servo.write(0);
+   
+  
+}
+
+void loop()
+{
+  
+  char tus=tustakimi.getKey();
+  if (tus!=NO_KEY)
+  {
+    
+    switch(tus)
+    {
+      case'*':
+      	lcd.clear();
+      	girilensifre="";
+      	servo.write(0);
+      	lcd.setCursor(0,1);
+      	lcd.write("KILITLI");
+      	delay(1000);
+      	lcd.clear();
+      	break;
+      
+  	  case'#':
+      	lcd.setCursor(0,1);
+      
+      	if (girilensifre==sifre)
+        {
+          servo.write(90);
+          lcd.write("ACILIYOR");
+          delay(1000);
+        }
+		else
+        {
+          lcd.write("GECERSIZ");
+        }
+      	delay(1000);
+      	lcd.clear();
+      	girilensifre="";
+      	break;
+      
+        default:
+      	  lcd.write(tus);
+      	  girilensifre+=tus;
+      	  break;
+    }
+  }
+}
+      
